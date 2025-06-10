@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Newsletter Mosquée</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <style>
+    body { background: #f9f9f9; }
+    .container { max-width: 960px; margin-top: 30px; }
+    #editor { height: 350px; background: white; }
+    @media (max-width: 768px) {
+      #editor { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container bg-white p-4 shadow rounded">
+    <h2 class="mb-4 text-center">📬 Newsletter de la Mosquée</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Objet :</label>
+        <input type="text" name="sujet" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Message HTML (utilise <code>{prenom}</code>) :</label>
+        <div id="editor"></div>
+        <input type="hidden" name="corps" id="corps">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Fichier CSV :</label>
+        <input type="file" name="fichier_csv" class="form-control" accept=".csv" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Image locale à insérer :</label><br>
+        <input type="file" id="imageInput" accept="image/*" class="form-control">
+        <button type="button" onclick="insertImage()" class="btn btn-outline-secondary mt-2">🖼️ Ajouter dans le message</button>
+      </div>
+
+      <button type="submit" onclick="beforeSubmit()" class="btn btn-primary">📤 Envoyer</button>
+      <button type="button" onclick="previewHTML()" class="btn btn-secondary ms-2">👁️ Prévisualiser</button>
+    </form>
+  </div>
+
+  <div class="container mt-4" id="preview-zone"></div>
+
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['link'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['clean']
+        ]
+      }
+    });
+
+    function beforeSubmit() {
+      document.getElementById('corps').value = quill.root.innerHTML;
+    }
+
+    function previewHTML() {
+      const html = quill.root.innerHTML;
+      fetch("/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "corps=" + encodeURIComponent(html)
+      })
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("preview-zone").innerHTML = '<div class="bg-white p-3 shadow rounded">' + html + '</div>';
+      });
+    }
+
+    function insertImage() {
+      const input = document.getElementById('imageInput');
+      const file = input.files[0];
+      if (!file) return alert("📷 Choisis une image d'abord");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
+        const range = quill.getSelection();
+        quill.insertEmbed(range ? range.index : 0, 'image', base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
