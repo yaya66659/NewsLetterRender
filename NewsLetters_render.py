@@ -27,13 +27,19 @@ def index():
         fichier.save(chemin)
 
         try:
-            with open(chemin, newline='', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    prenom = row.get("Prenom", "")
-                    email = row.get("Email", "")
-                    corps_personnalise = corps_html.replace("{prenom}", prenom)
-                    envoyer_email(email, sujet, corps_personnalise)
+            import chardet
+
+with open(chemin, 'rb') as f:
+    raw_data = f.read()
+    encodage_detecte = chardet.detect(raw_data)['encoding']
+
+with open(chemin, newline='', encoding=encodage_detecte) as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        prenom = row.get("Prenom", "")
+        email = row.get("Email", "")
+        corps_personnalise = corps_html.replace("{prenom}", prenom)
+        envoyer_email(email, sujet, corps_personnalise)
         finally:
             os.remove(chemin)
 
