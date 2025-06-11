@@ -30,20 +30,20 @@ def index():
 
         try:
             
-          with open(chemin, 'rb') as   f:
-           raw_data = f.read()
-           encodage_detecte =           chardet.detect(raw_data)['encoding']
+            with open(chemin, 'rb') as   f:
+                raw_data = f.read()
+                encodage_detecte = chardet.detect(raw_data)['encoding']
 
-           with open(chemin,  newline='', encoding=encodage_detecte)  as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-               prenom = row.get("Prenom", "")
-               email = row.get("Email", "")
-               if not email:
-                 print(f"❌ Email vide pour la ligne : {row}")
-                 continue
-               corps_personnalise = corps_html.replace("{prenom}", prenom)
-               envoyer_email(email, sujet, corps_personnalise)
+            with open(chemin,  newline='', encoding=encodage_detecte)  as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    prenom = row.get("Prenom", "")
+                    email = row.get("Email", "")
+                    if not email:
+                        print(f"❌ Email vide pour la ligne : {row}")
+                        continue
+                    corps_personnalise = corps_html.replace("{prenom}", prenom)
+                    envoyer_email(email, sujet, corps_personnalise)
         finally:
             os.remove(chemin)
 
