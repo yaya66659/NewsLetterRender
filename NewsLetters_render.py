@@ -37,10 +37,10 @@ def index():
            with open(chemin,  newline='', encoding=encodage_detecte)  as f:
             reader = csv.DictReader(f)
             for row in reader:
-            prenom = row.get("Prenom", "")
-            email = row.get("Email", "")
-           corps_personnalise = corps_html.replace("{prenom}", prenom)
-           envoyer_email(email, sujet, corps_personnalise)
+               prenom = row.get("Prenom", "")
+               email = row.get("Email", "")
+               corps_personnalise = corps_html.replace("{prenom}", prenom)
+               envoyer_email(email, sujet, corps_personnalise)
         finally:
             os.remove(chemin)
 
