@@ -3,6 +3,8 @@ import smtplib, csv, os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
+import chardet
+
 
 load_dotenv()  # facultatif sur Render, utile en local
 
@@ -27,8 +29,7 @@ def index():
         fichier.save(chemin)
 
         try:
-            import chardet
-
+            
 with open(chemin, 'rb') as f:
     raw_data = f.read()
     encodage_detecte = chardet.detect(raw_data)['encoding']
