@@ -37,7 +37,7 @@ def index():
                     encodage_detecte = 'utf-16'
 
             with open(chemin, newline='', encoding=encodage_detecte) as f:
-                reader = csv.DictReader(f)
+                reader = csv.DictReader(f, delimiter='\t')
                 # Correction des entêtes avec BOM éventuel
                 reader.fieldnames = [name.lstrip('\ufeff') for name in reader.fieldnames]
 
