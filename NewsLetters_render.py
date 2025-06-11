@@ -39,6 +39,9 @@ def index():
             for row in reader:
                prenom = row.get("Prenom", "")
                email = row.get("Email", "")
+               if not email:
+                 print(f"❌ Email vide pour la ligne : {row}")
+                 continue
                corps_personnalise = corps_html.replace("{prenom}", prenom)
                envoyer_email(email, sujet, corps_personnalise)
         finally:
