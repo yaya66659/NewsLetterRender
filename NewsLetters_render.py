@@ -28,7 +28,6 @@ def index():
         fichier.save(chemin)
 
         try:
-            # Détection encodage
             with open(chemin, 'rb') as f:
                 raw_data = f.read()
                 detection = chardet.detect(raw_data)
@@ -37,10 +36,15 @@ def index():
                     encodage_detecte = 'utf-16'
 
             with open(chemin, newline='', encoding=encodage_detecte) as f:
-                reader = csv.DictReader(f, delimiter='\t')
-                # Correction des entêtes avec BOM éventuel
+                # Lecture brut pour détecter le séparateur
+                debut = f.read(1000)
+                f.seek(0)
+                sep = '\t' if debut.count('\t') > debut.count(',') else ','
+                
+                reader = csv.DictReader(f, delimiter=sep)
                 reader.fieldnames = [name.lstrip('\ufeff') for name in reader.fieldnames]
 
+                mails_envoyes = 0
                 for row in reader:
                     prenom = row.get("Prenom", "").strip()
                     email = row.get("Email", "").strip()
@@ -49,6 +53,9 @@ def index():
                         continue
                     corps_personnalise = corps_html.replace("{prenom}", prenom)
                     envoyer_email(email, sujet, corps_personnalise)
+                    mails_envoyes += 1
+
+                print(f"✅ {mails_envoyes} mails envoyés.")
 
         finally:
             os.remove(chemin)
