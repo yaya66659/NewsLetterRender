@@ -36,6 +36,7 @@ def index():
 
             with open(chemin,  newline='', encoding=encodage_detecte)  as f:
                 reader = csv.DictReader(f)
+                reader.fieldnames = [name.lstrip('\ufeff') for name in reader.fieldnames]
                 for row in reader:
                     prenom = row.get("Prenom", "")
                     email = row.get("Email", "")
