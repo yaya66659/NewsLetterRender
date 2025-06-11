@@ -32,7 +32,7 @@ def index():
             
           with open(chemin, 'rb') as   f:
            raw_data = f.read()
-           encodage_detecte =.                         chardet.detect(raw_data)['encoding']
+           encodage_detecte =           chardet.detect(raw_data)['encoding']
 
            with open(chemin,  newline='', encoding=encodage_detecte)  as f:
             reader = csv.DictReader(f)
